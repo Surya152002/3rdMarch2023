@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Beta Sensor Value</title>
+	<style>
+		#sensorCanvas {
+			width: 100%;
+			height: 100%;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="sensorCanvas"></canvas>
+
+	<script>
+		// Get the canvas element
+		const canvas = document.getElementById("sensorCanvas");
+
+		// Get the 2D context of the canvas
+		const ctx = canvas.getContext("2d");
+
+		// Set the font style for displaying text
+		ctx.font = "20px Arial";
+
+		// Variables for tracking time
+		let startTime = null;
+		let endTime = null;
+
+		// Function to update the canvas with the sensor data
+		function updateCanvas(beta) {
+			// Clear the canvas
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+			// Check if the beta value is within the desired range
+			if (beta >= 80 && beta <= 87) {
+				// Record the start time if it hasn't been set yet
+				if (startTime === null) {
+					startTime = new Date().getTime();
+				}
+			} else {
+				// Record the end time if the beta value is outside the desired range and the start time has been set
+				if (startTime !== null) {
+					endTime = new Date().getTime();
+				}
+			}
+
+			// Round the beta value to two decimal places
+			const roundedBeta = Math.round(beta * 100) / 100;
+
+			// Display a message if the beta value is less than 80
+			if (beta < 80) {
+				ctx.fillText("Please sit properly", 10, 50);
+			} else {
+				// Display the rounded beta value on the canvas
+				ctx.fillText(`Beta value: ${roundedBeta}`, 10, 50);
+
+				// Display the time if both the start and end times have been recorded
+				if (startTime !== null && endTime !== null) {
+					const timeDiff = endTime - startTime;
+					ctx.fillText(`Time: ${timeDiff}ms`, 10, 80);
+				}
+			}
+		}
+
+		// Event listener for device orientation change
+		window.addEventListener("deviceorientation", (event) => {
+			// Get the beta value from the sensor data
+			const beta = event.beta;
+
+			// Update the canvas with the beta value
+			updateCanvas(beta);
+		});
+	</script>
+</body>
+</html>
